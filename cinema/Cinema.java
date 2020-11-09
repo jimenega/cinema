@@ -1,6 +1,7 @@
 package cinema;
 
 import java.util.Arrays;
+import java.util.Scanner;
 
 public class Cinema {
 
@@ -31,7 +32,71 @@ public class Cinema {
     }
 
     public static void main(String[] args) {
-        populateCinema();
-        showSeating();
+        //populateCinema();
+        //showSeating();
+        //ScreenRooms.getFloorPlan();
+        ScreenRooms SR1 = new ScreenRooms();
+        //SR1.getFloorPlan();
+        SR1.calculateProfit();
     }
+}
+
+ class ScreenRooms {
+    static final int BASIC_PRICE = 10;
+    static final int BUDGET_PRICE = 8;
+    static int rows;
+    static int seats;
+    static boolean largeRoom = false;
+    static int totalSeats;
+    static int profit;
+
+     public void calculateProfit() {
+         getFloorPlan();
+         getProfit();
+     }
+
+    public void setRoomSize() {
+        totalSeats = rows * seats;
+        if (totalSeats > 60) largeRoom = true;
+    }
+
+     public boolean isNumRowsOdd() {
+        return rows % 2 != 0;
+     }
+
+     public void getProfit() {
+        int pricyRowCount = 0, budgetRowCount = 0;
+        int pricyTicketPrice = 0, budgetTicketPrice = 0;
+        //boolean numRowsOdd = isNumRowsOdd();
+        if (!largeRoom) { profit = rows * seats * BASIC_PRICE;} //not large room
+        if (largeRoom && isNumRowsOdd()) {
+            pricyRowCount = Math.abs(rows/2);
+            budgetRowCount = Math.abs((rows/2) + 1);
+            pricyTicketPrice = BASIC_PRICE;
+            budgetTicketPrice = BUDGET_PRICE;
+            profit = (pricyTicketPrice * pricyRowCount * seats) +(budgetTicketPrice * budgetRowCount * seats);
+        }
+        if (largeRoom && !isNumRowsOdd()) {
+            pricyRowCount = rows/2;
+            budgetRowCount = rows/2;
+            pricyTicketPrice = BASIC_PRICE;
+            budgetTicketPrice = BUDGET_PRICE;
+            //profit = pricyTicketPrice + budgetTicketPrice;
+            profit = (pricyTicketPrice * pricyRowCount * seats) +(budgetTicketPrice * budgetRowCount * seats);
+        }
+        System.out.println("Total income:");
+        System.out.printf("$%d",profit);
+     }
+
+     public void getFloorPlan() {
+         Scanner scanner = new Scanner(System.in);
+         System.out.println("Enter the number of rows:");
+         rows = scanner.nextInt();
+         System.out.println("Enter the number of seats in each rows:");
+         seats = scanner.nextInt();
+         setRoomSize();
+         //System.out.printf("%d %d %d %b", rows, seats, totalSeats, largeRoom);
+         System.out.printf("totalseats: %d  largeroom: %b", totalSeats, largeRoom);
+         System.out.println();
+     }
 }
