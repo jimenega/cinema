@@ -74,17 +74,17 @@ public class Cinema {
      }
 
      public void getProfit() {
-        int pricyRowCount = Math.abs(rows/2);
+        int priceyRowCount = Math.abs(rows/2);
         int budgetRowCountOdd = Math.abs((rows/2) + 1);
         int budgetRowCountEven = Math.abs(rows/2);
 
         if (!largeRoom) { profit = rows * seats * BASIC_PRICE;} //not large room
         if (largeRoom && isNumRowsOdd()) {
-            profit = (BASIC_PRICE * pricyRowCount * seats)
+            profit = (BASIC_PRICE * priceyRowCount * seats)
             + (BUDGET_PRICE * budgetRowCountOdd * seats);
         }
         if (largeRoom && !isNumRowsOdd()) {
-            profit = (BASIC_PRICE * pricyRowCount * seats)
+            profit = (BASIC_PRICE * priceyRowCount * seats)
             + (BUDGET_PRICE * budgetRowCountEven * seats);
         }
         System.out.println("Total income:");
