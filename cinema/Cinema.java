@@ -15,7 +15,7 @@ public class Cinema {
                 cinema[i][j] = 'S';
             }
         }
-        System.out.println(Arrays.deepToString(cinema));
+        //System.out.println(Arrays.deepToString(cinema));
     }
 
     public static String formatString(int row) {
@@ -29,7 +29,7 @@ public class Cinema {
     public static void showSeating() {
         int cinemaRow = 0;
         //String columnHeading = "  1 2 3 4 5 6 7 8";
-        System.out.println("Cinema:");
+        System.out.printf("%n%s%n", "Cinema:");
         //System.out.println("  1 2 3 4 5 6 7 8"); //column heading
         System.out.printf("%s", "  ");
         for (int columnHeading = 1; columnHeading <= ScreenRooms.seats; columnHeading++ ) {
@@ -49,6 +49,8 @@ public class Cinema {
         screenRoom1.calculateProfit();
         populateCinema();
         showSeating();
+        screenRoom1.sellTicket();
+        showSeating();
     }
 }
 
@@ -59,44 +61,85 @@ public class Cinema {
     static int seats;
     static boolean largeRoom = false;
     static int profit;
+    static int soldTicketPrice;
 
-     public void calculateProfit() {
-        getFloorPlan();
-        getProfit();
-     }
+    public void calculateProfit() {
+    getFloorPlan();
+    getProfit();
+    }
 
     public void setRoomSize() {
         if ((rows * seats) > 60) largeRoom = true;
     }
 
-     public boolean isNumRowsOdd() {
+    public boolean isNumRowsOdd() {
          return rows % 2 != 0;
      }
 
-     public void getProfit() {
-        int priceyRowCount = Math.abs(rows/2);
-        int budgetRowCountOdd = Math.abs((rows/2) + 1);
-        int budgetRowCountEven = Math.abs(rows/2);
+    public void getProfit() {
+    int priceyRowCount = Math.abs(rows/2);
+    int budgetRowCountOdd = Math.abs((rows/2) + 1);
+    int budgetRowCountEven = Math.abs(rows/2);
 
-        if (!largeRoom) { profit = rows * seats * BASIC_PRICE;} //not large room
-        if (largeRoom && isNumRowsOdd()) {
-            profit = (BASIC_PRICE * priceyRowCount * seats)
-            + (BUDGET_PRICE * budgetRowCountOdd * seats);
-        }
-        if (largeRoom && !isNumRowsOdd()) {
-            profit = (BASIC_PRICE * priceyRowCount * seats)
-            + (BUDGET_PRICE * budgetRowCountEven * seats);
-        }
-        System.out.println("Total income:");
-        System.out.printf("$%d%n%n",profit);
+    if (!largeRoom) { profit = rows * seats * BASIC_PRICE;} //not large room
+    if (largeRoom && isNumRowsOdd()) {
+        profit = (BASIC_PRICE * priceyRowCount * seats)
+        + (BUDGET_PRICE * budgetRowCountOdd * seats);
+    }
+    if (largeRoom && !isNumRowsOdd()) {
+        profit = (BASIC_PRICE * priceyRowCount * seats)
+        + (BUDGET_PRICE * budgetRowCountEven * seats);
+    }
+    //System.out.println("Total income:");
+    //System.out.printf("$%d%n%n",profit);
+    }
+
+    public void getFloorPlan() {
+        Scanner scanner = new Scanner(System.in);
+        //System.out.println("Enter the number of rows:");
+        System.out.printf("%s%n", "Enter the number of rows:");
+        rows = scanner.nextInt();
+        //System.out.println("Enter the number of seats in each rows:");
+        System.out.printf("%s%n", "Enter the number of seats in each rows:");
+        seats = scanner.nextInt();
+        setRoomSize();
+    }
+
+     public void sellTicket() {
+         Scanner scanner = new Scanner(System.in);
+         System.out.printf("%n%s%n", "Enter a row number:");
+         int soldRow = scanner.nextInt();
+         System.out.printf("%s%n", "Enter a seat number in that row:");
+         int soldSeat = scanner.nextInt();
+         //int soldTicketPrice = getTicketPrice(soldRow);
+         getTicketPrice(soldRow);
+         tagSoldSeat(soldRow, soldSeat);
+         System.out.printf("%n%s%d%n", "Ticket price: ", soldTicketPrice);
+         //System.out.println();
      }
 
-     public void getFloorPlan() {
-         Scanner scanner = new Scanner(System.in);
-         System.out.println("Enter the number of rows:");
-         rows = scanner.nextInt();
-         System.out.println("Enter the number of seats in each rows:");
-         seats = scanner.nextInt();
-         setRoomSize();
+     public void getTicketPrice(int soldRow) {
+         //setRoomSize();
+         int budgetRowCountOdd = Math.abs((rows/2) + 1);
+         int budgetRowCountEven = Math.abs(rows/2);
+         //System.out.printf("largeroom:%b  isNumRowsOdd:%b  ", largeRoom, isNumRowsOdd());
+         //System.out.printf("budgetRowCountOdd:%d  budgetRowCountEven:%d",budgetRowCountOdd, budgetRowCountEven);
+         //int soldTicketPrice = 0;
+        //System.out.println(soldRow);
+        //int priceyRowCount = Math.abs(rows/2);
+
+        if (!largeRoom) { soldTicketPrice = BASIC_PRICE; }
+
+        if (largeRoom && isNumRowsOdd() && (soldRow < budgetRowCountOdd)) { soldTicketPrice = BASIC_PRICE; }
+
+        if (largeRoom && isNumRowsOdd() && (soldRow >= budgetRowCountOdd)) { soldTicketPrice = BUDGET_PRICE; }
+
+        if (largeRoom && !isNumRowsOdd() && (soldRow <= budgetRowCountEven)) { soldTicketPrice = BASIC_PRICE; }
+
+        if (largeRoom && !isNumRowsOdd() && (soldRow > budgetRowCountEven)) { soldTicketPrice = BUDGET_PRICE; }
+    }
+
+     public void tagSoldSeat(int soldRow, int soldSeat) {
+         Cinema.cinema[soldRow - 1][soldSeat - 1] = 'B';
      }
 }
