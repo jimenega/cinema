@@ -42,11 +42,13 @@ public class Cinema {
 
     public static void main(String[] args) {
         ScreenRooms screenRoom1 = new ScreenRooms();
-        screenRoom1.calculateProfit();
+        //screenRoom1.calculateProfit();
+        screenRoom1.getFloorPlan();
         populateCinema();
-        showSeating();
-        screenRoom1.sellTicket();
-        showSeating();
+        screenRoom1.runMenu();
+        //showSeating();
+        //screenRoom1.sellTicket();
+        //showSeating();
     }
 }
 
@@ -58,6 +60,38 @@ public class Cinema {
     static boolean largeRoom = false;
     static int profit;
     static int soldTicketPrice;
+
+    public int showMenu() {
+        Scanner scanner = new Scanner(System.in);
+        int m1 = 1, m2 = 2, m3 = 0;
+        System.out.printf("%n%d%c%s%n",m1,'.'," Show the seats");
+        System.out.printf("%d%c%s%n",m2,'.'," Buy a ticket");
+        System.out.printf("%d%c%s%n",m3,'.'," Exit");
+        return scanner.nextInt();
+    }
+
+    public void runMenu() {
+        boolean openCinema = true;
+        int menuItem;
+        do {
+            menuItem = showMenu();
+            switch (menuItem) {
+                case 1:
+                    //System.out.printf("%d%n", menuItem);
+                    Cinema.showSeating();
+                    break;
+                case 2:
+                    //System.out.printf("%d%n", menuItem);
+                    sellTicket();
+                    break;
+                case 0:
+                    openCinema = false;
+                    break;
+            }
+        } while (openCinema);
+        //return false;
+    }
+
 
     public void calculateProfit() {
         getFloorPlan();
@@ -107,7 +141,7 @@ public class Cinema {
         int soldSeat = scanner.nextInt();
         getTicketPrice(soldRow);
         tagSoldSeat(soldRow, soldSeat);
-        System.out.printf("%n%s%c%d%n", "Ticket price: ", '$', soldTicketPrice);
+        System.out.printf("%s%c%d%n", "Ticket price: ", '$', soldTicketPrice);
      }
 
      public void getTicketPrice(int soldRow) {
