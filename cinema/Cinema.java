@@ -42,13 +42,10 @@ public class Cinema {
 
     public static void main(String[] args) {
         ScreenRooms screenRoom1 = new ScreenRooms();
-        //screenRoom1.calculateProfit();
         screenRoom1.getFloorPlan();
         populateCinema();
+        screenRoom1.getProfit();
         screenRoom1.runMenu();
-        //showSeating();
-        //screenRoom1.sellTicket();
-        //showSeating();
     }
 }
 
@@ -57,16 +54,20 @@ public class Cinema {
     static final int BUDGET_PRICE = 8;
     static int rows;
     static int seats;
+    static int totalSeats;
     static boolean largeRoom = false;
     static int profit;
     static int soldTicketPrice;
+    static int soldTicketCount;
+    static int income;
 
     public int showMenu() {
         Scanner scanner = new Scanner(System.in);
-        int m1 = 1, m2 = 2, m3 = 0;
+        int m1 = 1, m2 = 2, m3 = 3, m0 = 0;
         System.out.printf("%n%d%c%s%n",m1,'.'," Show the seats");
         System.out.printf("%d%c%s%n",m2,'.'," Buy a ticket");
-        System.out.printf("%d%c%s%n",m3,'.'," Exit");
+        System.out.printf("%d%c%s%n",m3,'.'," Statistics");
+        System.out.printf("%d%c%s%n",m0,'.'," Exit");
         return scanner.nextInt();
     }
 
@@ -77,25 +78,19 @@ public class Cinema {
             menuItem = showMenu();
             switch (menuItem) {
                 case 1:
-                    //System.out.printf("%d%n", menuItem);
                     Cinema.showSeating();
                     break;
                 case 2:
-                    //System.out.printf("%d%n", menuItem);
                     sellTicket();
+                    break;
+                case 3:
+                    showStats();
                     break;
                 case 0:
                     openCinema = false;
                     break;
             }
         } while (openCinema);
-        //return false;
-    }
-
-
-    public void calculateProfit() {
-        getFloorPlan();
-        getProfit();
     }
 
     public void setRoomSize() {
@@ -120,8 +115,6 @@ public class Cinema {
             profit = (BASIC_PRICE * priceyRowCount * seats)
             + (BUDGET_PRICE * budgetRowCountEven * seats);
         }
-        //System.out.println("Total income:");
-        //System.out.printf("$%d%n%n",profit);
     }
 
     public void getFloorPlan() {
@@ -131,17 +124,32 @@ public class Cinema {
         System.out.printf("%s%n", "Enter the number of seats in each rows:");
         seats = scanner.nextInt();
         setRoomSize();
+        totalSeats = rows * seats;
     }
 
      public void sellTicket() {
+        boolean ticketSaleCompleted = false;
         Scanner scanner = new Scanner(System.in);
-        System.out.printf("%n%s%n", "Enter a row number:");
-        int soldRow = scanner.nextInt();
-        System.out.printf("%s%n", "Enter a seat number in that row:");
-        int soldSeat = scanner.nextInt();
-        getTicketPrice(soldRow);
-        tagSoldSeat(soldRow, soldSeat);
-        System.out.printf("%s%c%d%n", "Ticket price: ", '$', soldTicketPrice);
+        do {
+            System.out.printf("%n%s%n", "Enter a row number:");
+            int soldRow = scanner.nextInt();
+            System.out.printf("%s%n", "Enter a seat number in that row:");
+            int soldSeat = scanner.nextInt();
+            if (isSeatInScope(soldRow, soldSeat)) {
+                if (isSeatEmpty(soldRow, soldSeat)) {
+                    getTicketPrice(soldRow);
+                    tagSoldSeat(soldRow, soldSeat);
+                    income += soldTicketPrice;
+                    soldTicketCount++;
+                    System.out.printf("%n%s%c%d%n", "Ticket price: ", '$', soldTicketPrice);
+                    ticketSaleCompleted = true;
+                } else {
+                    System.out.printf("%n%s%n", "That ticket has already been purchased!");
+                }
+            } else {
+                System.out.printf("%n%s%n", "Wrong input!");
+            }
+        } while (!ticketSaleCompleted);
      }
 
      public void getTicketPrice(int soldRow) {
@@ -161,5 +169,21 @@ public class Cinema {
 
      public void tagSoldSeat(int soldRow, int soldSeat) {
         Cinema.cinema[soldRow - 1][soldSeat - 1] = 'B';
+     }
+
+     public boolean isSeatEmpty(int soldRow, int soldSeat) {
+        return Cinema.cinema[soldRow - 1][soldSeat - 1] == 'S';
+     }
+
+     public boolean isSeatInScope(int soldRow, int soldSeat) {
+         return soldRow <= rows && soldSeat <= seats;
+     }
+
+     public void showStats() {
+        double percentSeatsSold = ((double)soldTicketCount/totalSeats) * 100;
+        System.out.printf("%n%s%d%n", "Number of purchased tickets: ", soldTicketCount);
+        System.out.printf("%s%2.2f%c%n", "Percentage: ", percentSeatsSold, '%');
+        System.out.printf("%s%c%d%n", "Current income: ", '$', income);
+        System.out.printf("%s%c%d%n", "Total income: ", '$', profit);
      }
 }
